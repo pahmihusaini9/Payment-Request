@@ -3,34 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <title>Payment Request</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- penting untuk mobile -->
+
   <style>
-    body { font-family: Arial, sans-serif; max-width: 1000px; margin: auto; padding: 20px; }
+    body { 
+      font-family: Arial, sans-serif; 
+      max-width: 1000px; 
+      margin: auto; 
+      padding: 20px; 
+    }
     h1 { text-align: center; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+
+    label { font-weight: bold; }
+    input { 
+      width: 100%; 
+      padding: 8px; 
+      margin-bottom: 12px; 
+      border: 1px solid #ccc; 
+      border-radius: 5px;
+    }
+
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 20px; 
+    }
     table, th, td { border: 1px solid #ccc; }
     th, td { padding: 8px; text-align: center; }
-    button { margin-top: 10px; padding: 8px 16px; }
-    input { width: 100%; padding: 6px; }
+    button { 
+      margin-top: 10px; 
+      padding: 10px 16px; 
+      border: none; 
+      border-radius: 6px; 
+      background: #007BFF; 
+      color: white; 
+      cursor: pointer; 
+    }
+    button:hover { background: #0056b3; }
+
+    /* Responsive khusus untuk HP */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+
+      table, thead, tbody, th, td, tr { 
+        display: block; 
+        width: 100%; 
+      }
+
+      thead tr { display: none; } /* header tabel disembunyikan */
+
+      tbody tr { 
+        margin-bottom: 15px; 
+        border: 1px solid #ddd; 
+        border-radius: 8px;
+        padding: 10px;
+      }
+
+      td { 
+        text-align: left; 
+        padding: 6px; 
+        border: none; 
+        border-bottom: 1px solid #eee; 
+        position: relative;
+      }
+
+      td::before { 
+        content: attr(data-label); 
+        font-weight: bold; 
+        display: block; 
+        margin-bottom: 4px; 
+        color: #555;
+      }
+
+      input { font-size: 14px; }
+      button { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <h1>Payment Request Form</h1>
+  <h1>TIARA HANA INDONESIA</h1>
   <h2>Payment Request Form</h2>
 
   <label>Date:</label>
-  <input type="date" id="date"><br><br>
+  <input type="date" id="date">
 
   <label>Department:</label>
-  <input type="text" id="department"><br><br>
+  <input type="text" id="department">
 
   <label>PIC:</label>
-  <input type="text" id="pic"><br><br>
+  <input type="text" id="pic">
 
   <label>Bill To (Name):</label>
-  <input type="text" id="billToName"><br><br>
+  <input type="text" id="billToName">
 
   <label>Bill To (Rek):</label>
-  <input type="text" id="billToRek"><br><br>
+  <input type="text" id="billToRek">
 
   <h3>Items</h3>
   <table id="itemsTable">
@@ -57,20 +124,22 @@
   <p id="status"></p>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxHY8VmqnWgfBe-baNK5WoUZIc9vPf9DV10KTEzN37OFs65AqAy8mQH09eXoINbMtWR/exec"; // ganti dengan URL web app dari Apps Script
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxHY8VmqnWgfBe-baNK5WoUZIc9vPf9DV10KTEzN37OFs65AqAy8mQH09eXoINbMtWR/exec";
 
     function addRow() {
       const table = document.getElementById("itemsTable").getElementsByTagName("tbody")[0];
       const row = table.insertRow();
-      const fields = ["productName", "description", "amount", "qty", "grossPrice", "discount", "tax", "netPrice"];
+      const fields = ["Product Name", "Description", "Amount", "Qty", "Gross Price", "Discount", "Tax", "Net Price"];
       fields.forEach(f => {
         const cell = row.insertCell();
         const input = document.createElement("input");
         input.type = "text";
         input.name = f;
+        cell.setAttribute("data-label", f); // penting untuk mobile view
         cell.appendChild(input);
       });
       const cell = row.insertCell();
+      cell.setAttribute("data-label", "Action");
       const btn = document.createElement("button");
       btn.innerText = "Delete";
       btn.onclick = () => row.remove();
@@ -107,7 +176,7 @@
       try {
         const response = await fetch(scriptURL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" }, // penting!
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
 
