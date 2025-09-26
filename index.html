@@ -1,205 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
   <title>Payment Request Form</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- penting untuk mobile -->
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      max-width: 1000px; 
-      margin: auto; 
-      padding: 20px; 
-    }
-    h1, h2 { text-align: center; }
-
-    label { font-weight: bold; }
-    input { 
-      width: 100%; 
-      padding: 8px; 
-      margin-bottom: 12px; 
-      border: 1px solid #ccc; 
-      border-radius: 5px;
-    }
-
-    table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin-top: 20px; 
-    }
-    table, th, td { border: 1px solid #ccc; }
-    th, td { padding: 8px; text-align: center; }
-    button { 
-      margin-top: 10px; 
-      padding: 10px 16px; 
-      border: none; 
-      border-radius: 6px; 
-      background: #007BFF; 
-      color: white; 
-      cursor: pointer; 
-    }
-    button:hover { background: #0056b3; }
-
-    /* Responsive khusus untuk HP */
-    @media (max-width: 768px) {
-      body { padding: 10px; }
-
-      table, thead, tbody, th, td, tr { 
-        display: block; 
-        width: 100%; 
-      }
-
-      thead tr { display: none; } /* header tabel disembunyikan */
-
-      tbody tr { 
-        margin-bottom: 15px; 
-        border: 1px solid #ddd; 
-        border-radius: 8px;
-        padding: 10px;
-      }
-
-      td { 
-        text-align: left; 
-        padding: 6px; 
-        border: none; 
-        border-bottom: 1px solid #eee; 
-        position: relative;
-      }
-
-      td::before { 
-        content: attr(data-label); 
-        font-weight: bold; 
-        display: block; 
-        margin-bottom: 4px; 
-        color: #555;
-      }
-
-      input { font-size: 14px; }
-      button { width: 100%; }
-    }
+    body{font-family:Arial,Helvetica,sans-serif;max-width:1000px;margin:auto;padding:20px}
+    h1,h2{text-align:center} label{font-weight:bold} input{width:100%;padding:8px;margin-bottom:12px;border:1px solid #ccc;border-radius:5px}
+    table{width:100%;border-collapse:collapse;margin-top:20px} table,th,td{border:1px solid #ccc} th,td{padding:8px;text-align:center}
+    button{margin-top:10px;padding:10px 16px;border:none;border-radius:6px;background:#007BFF;color:#fff;cursor:pointer}
+    button:hover{background:#0056b3} #status{margin-top:12px;font-weight:bold}
   </style>
 </head>
 <body>
   <h1>Payment Request Form</h1>
   <h2>TIARA HANA INDONESIA</h2>
 
-  <label>Date:</label>
-  <input type="date" id="date">
-
-  <label>Department:</label>
-  <input type="text" id="department">
-
-  <label>PIC:</label>
-  <input type="text" id="pic">
-
-  <label>Bill To (Name):</label>
-  <input type="text" id="billToName">
-
-  <label>Bill To (Rek):</label>
-  <input type="text" id="billToRek">
+  <label for="date">Date:</label><input id="date" type="date"/>
+  <label for="department">Department:</label><input id="department" type="text"/>
+  <label for="pic">PIC:</label><input id="pic" type="text"/>
+  <label for="billToName">Bill To (Name):</label><input id="billToName" type="text"/>
+  <label for="billToRek">Bill To (Rek):</label><input id="billToRek" type="text"/>
 
   <h3>Items</h3>
-  <table id="itemsTable">
-    <thead>
-      <tr>
-        <th>Product Name</th>
-        <th>Description</th>
-        <th>Amount</th>
-        <th>Qty</th>
-        <th>Gross Price</th>
-        <th>Discount</th>
-        <th>Tax</th>
-        <th>Net Price</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <button type="button" id="addRowBtn">Add Row</button>
+  <table id="itemsTable"><thead><tr>
+    <th>Product Name</th><th>Description</th><th>Amount</th><th>Qty</th><th>Gross Price</th><th>Discount</th><th>Tax</th><th>Net Price</th><th>Action</th>
+  </tr></thead><tbody></tbody></table>
 
+  <button id="addRowBtn" type="button">Add Row</button>
   <br><br>
-  <button type="button" id="submitBtn">Submit Request</button>
-
+  <button id="submitBtn" type="button">Submit Request</button>
   <p id="status"></p>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxHY8VmqnWgfBe-baNK5WoUZIc9vPf9DV10KTEzN37OFs65AqAy8mQH09eXoINbMtWR/exec";
+    // GANTI dengan URL Web App yang berakhiran /exec
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyKpCQZXIq1xNcAb29E3jFqiEBl2fRRwdWxl2Zq-n6K1-JWYRgYwO0VkNEgFjXmoA6f/exec";
 
-    // Tambah row ke tabel
     function addRow() {
-      const table = document.querySelector("#itemsTable tbody");
-      const row = table.insertRow();
-
-      const fields = ["Product Name", "Description", "Amount", "Qty", "Gross Price", "Discount", "Tax", "Net Price"];
-      fields.forEach(f => {
+      const tbody = document.querySelector("#itemsTable tbody");
+      const row = tbody.insertRow();
+      const fields = [
+        {k:"productName", label:"Product Name"},
+        {k:"description", label:"Description"},
+        {k:"amount", label:"Amount"},
+        {k:"qty", label:"Qty"},
+        {k:"grossPrice", label:"Gross Price"},
+        {k:"discount", label:"Discount"},
+        {k:"tax", label:"Tax"},
+        {k:"netPrice", label:"Net Price"}
+      ];
+      fields.forEach(f=>{
         const cell = row.insertCell();
-        const input = document.createElement("input");
-        input.type = "text";
-        input.name = f.replace(/\s+/g, "").toLowerCase(); // misal "Product Name" jadi "productname"
-        cell.setAttribute("data-label", f);
-        cell.appendChild(input);
+        cell.setAttribute("data-label", f.label);
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.name = f.k;
+        inp.placeholder = f.label;
+        cell.appendChild(inp);
       });
-
-      // Tombol delete
-      const actionCell = row.insertCell();
-      actionCell.setAttribute("data-label", "Action");
-      const btn = document.createElement("button");
-      btn.innerText = "Delete";
-      btn.type = "button";
-      btn.onclick = () => row.remove();
-      actionCell.appendChild(btn);
+      const action = row.insertCell();
+      action.setAttribute("data-label","Action");
+      const del = document.createElement("button");
+      del.type="button"; del.innerText="Delete";
+      del.addEventListener("click", ()=>row.remove());
+      action.appendChild(del);
     }
 
-    // Submit form
-    async function submitForm() {
-      const date = document.getElementById("date").value;
-      const department = document.getElementById("department").value;
-      const pic = document.getElementById("pic").value;
-      const billToName = document.getElementById("billToName").value;
-      const billToRek = document.getElementById("billToRek").value;
-
-      const rows = document.querySelectorAll("#itemsTable tbody tr");
-      const items = [];
-      rows.forEach(r => {
-        const inputs = r.querySelectorAll("input");
-        items.push({
-          productName: inputs[0].value,
-          description: inputs[1].value,
-          amount: inputs[2].value,
-          qty: inputs[3].value,
-          grossPrice: inputs[4].value,
-          discount: inputs[5].value,
-          tax: inputs[6].value,
-          netPrice: inputs[7].value
-        });
-      });
-
-      const data = { date, department, pic, billToName, billToRek, items };
-
-      document.getElementById("status").innerText = "Submitting...";
-
+    async function submitForm(){
+      const statusEl = document.getElementById("status");
       try {
-        const response = await fetch(scriptURL, {
+        const date = document.getElementById("date").value;
+        const department = document.getElementById("department").value;
+        const pic = document.getElementById("pic").value;
+        const billToName = document.getElementById("billToName").value;
+        const billToRek = document.getElementById("billToRek").value;
+        const rows = document.querySelectorAll("#itemsTable tbody tr");
+        if (!rows.length) { statusEl.innerText = "Tambahkan minimal 1 item."; return; }
+        const items = [];
+        rows.forEach(r=>{
+          const inputs = r.querySelectorAll("input");
+          items.push({
+            productName: inputs[0].value || "",
+            description: inputs[1].value || "",
+            amount: inputs[2].value || "",
+            qty: inputs[3].value || "",
+            grossPrice: inputs[4].value || "",
+            discount: inputs[5].value || "",
+            tax: inputs[6].value || "",
+            netPrice: inputs[7].value || ""
+          });
+        });
+
+        const payload = { date, department, pic, billToName, billToRek, items };
+        console.log("Sending payload:", payload);
+        statusEl.innerText = "Submitting...";
+
+        const resp = await fetch(scriptURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload)
         });
-        
-        const result = await response.json();
-        if (result.result === "success") {
-          document.getElementById("status").innerText = "✅ Submitted successfully!";
+
+        // tampilkan status dan log server response (bila ada)
+        const text = await resp.text();
+        console.log("Raw server response:", text);
+        let json;
+        try { json = JSON.parse(text); }
+        catch(e) { throw new Error("Server tidak mengembalikan JSON: " + text); }
+
+        if (json.result === "success") {
+          statusEl.innerText = "✅ Submitted. rows: " + json.rows;
         } else {
-          document.getElementById("status").innerText = "❌ Error: " + result.message;
+          statusEl.innerText = "❌ Server error: " + (json.message || JSON.stringify(json));
         }
+
       } catch (err) {
-        document.getElementById("status").innerText = "❌ Failed to connect to server.";
+        console.error("Submit error:", err);
+        statusEl.innerText = "❌ Failed to connect to server: " + err.message;
       }
     }
 
-    // Event listener tombol
-    document.getElementById("addRowBtn").addEventListener("click", addRow);
-    document.getElementById("submitBtn").addEventListener("click", submitForm);
+    document.addEventListener("DOMContentLoaded", function(){
+      document.getElementById("addRowBtn").addEventListener("click", addRow);
+      document.getElementById("submitBtn").addEventListener("click", submitForm);
+      addRow(); // optional: buka 1 row langsung
+    });
   </script>
 </body>
 </html>
