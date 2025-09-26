@@ -1,130 +1,126 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Payment Request Form</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Payment Request</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;max-width:1000px;margin:auto;padding:20px}
-    h1,h2{text-align:center} label{font-weight:bold} input{width:100%;padding:8px;margin-bottom:12px;border:1px solid #ccc;border-radius:5px}
-    table{width:100%;border-collapse:collapse;margin-top:20px} table,th,td{border:1px solid #ccc} th,td{padding:8px;text-align:center}
-    button{margin-top:10px;padding:10px 16px;border:none;border-radius:6px;background:#007BFF;color:#fff;cursor:pointer}
-    button:hover{background:#0056b3} #status{margin-top:12px;font-weight:bold}
+    body { font-family: Arial, sans-serif; max-width: 1000px; margin: auto; padding: 20px; }
+    h1 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 8px; text-align: center; }
+    button { margin-top: 10px; padding: 8px 16px; }
+    input { width: 100%; padding: 6px; }
   </style>
 </head>
 <body>
   <h1>Payment Request Form</h1>
-  <h2>TIARA HANA INDONESIA</h2>
 
-  <label for="date">Date:</label><input id="date" type="date"/>
-  <label for="department">Department:</label><input id="department" type="text"/>
-  <label for="pic">PIC:</label><input id="pic" type="text"/>
-  <label for="billToName">Bill To (Name):</label><input id="billToName" type="text"/>
-  <label for="billToRek">Bill To (Rek):</label><input id="billToRek" type="text"/>
+  <label>Date:</label>
+  <input type="date" id="date"><br><br>
+
+  <label>Department:</label>
+  <input type="text" id="department"><br><br>
+
+  <label>PIC:</label>
+  <input type="text" id="pic"><br><br>
+
+  <label>Bill To (Name):</label>
+  <input type="text" id="billToName"><br><br>
+
+  <label>Bill To (Rek):</label>
+  <input type="text" id="billToRek"><br><br>
 
   <h3>Items</h3>
-  <table id="itemsTable"><thead><tr>
-    <th>Product Name</th><th>Description</th><th>Amount</th><th>Qty</th><th>Gross Price</th><th>Discount</th><th>Tax</th><th>Net Price</th><th>Action</th>
-  </tr></thead><tbody></tbody></table>
+  <table id="itemsTable">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Qty</th>
+        <th>Gross Price</th>
+        <th>Discount</th>
+        <th>Tax</th>
+        <th>Net Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button type="button" onclick="addRow()">Add Row</button>
 
-  <button id="addRowBtn" type="button">Add Row</button>
   <br><br>
-  <button id="submitBtn" type="button">Submit Request</button>
+  <button type="button" onclick="submitForm()">Submit Request</button>
+
   <p id="status"></p>
 
   <script>
-    // GANTI dengan URL Web App yang berakhiran /exec
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwxguu2AkxP__ixF8VbSA4YMwGMw2Pt8j-oN1aYWJ8X1X4KDa760xVOtJkyaCrieygr/exec";
+    const scriptURL = https://script.google.com/macros/s/AKfycbwxguu2AkxP__ixF8VbSA4YMwGMw2Pt8j-oN1aYWJ8X1X4KDa760xVOtJkyaCrieygr/exec"; // ganti dengan URL web app dari Apps Script
 
     function addRow() {
-      const tbody = document.querySelector("#itemsTable tbody");
-      const row = tbody.insertRow();
-      const fields = [
-        {k:"productName", label:"Product Name"},
-        {k:"description", label:"Description"},
-        {k:"amount", label:"Amount"},
-        {k:"qty", label:"Qty"},
-        {k:"grossPrice", label:"Gross Price"},
-        {k:"discount", label:"Discount"},
-        {k:"tax", label:"Tax"},
-        {k:"netPrice", label:"Net Price"}
-      ];
-      fields.forEach(f=>{
+      const table = document.getElementById("itemsTable").getElementsByTagName("tbody")[0];
+      const row = table.insertRow();
+      const fields = ["productName", "description", "amount", "qty", "grossPrice", "discount", "tax", "netPrice"];
+      fields.forEach(f => {
         const cell = row.insertCell();
-        cell.setAttribute("data-label", f.label);
-        const inp = document.createElement("input");
-        inp.type = "text";
-        inp.name = f.k;
-        inp.placeholder = f.label;
-        cell.appendChild(inp);
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = f;
+        cell.appendChild(input);
       });
-      const action = row.insertCell();
-      action.setAttribute("data-label","Action");
-      const del = document.createElement("button");
-      del.type="button"; del.innerText="Delete";
-      del.addEventListener("click", ()=>row.remove());
-      action.appendChild(del);
+      const cell = row.insertCell();
+      const btn = document.createElement("button");
+      btn.innerText = "Delete";
+      btn.onclick = () => row.remove();
+      cell.appendChild(btn);
     }
 
-    async function submitForm(){
-      const statusEl = document.getElementById("status");
+    async function submitForm() {
+      const date = document.getElementById("date").value;
+      const department = document.getElementById("department").value;
+      const pic = document.getElementById("pic").value;
+      const billToName = document.getElementById("billToName").value;
+      const billToRek = document.getElementById("billToRek").value;
+
+      const rows = document.querySelectorAll("#itemsTable tbody tr");
+      const items = [];
+      rows.forEach(r => {
+        const inputs = r.querySelectorAll("input");
+        items.push({
+          productName: inputs[0].value,
+          description: inputs[1].value,
+          amount: inputs[2].value,
+          qty: inputs[3].value,
+          grossPrice: inputs[4].value,
+          discount: inputs[5].value,
+          tax: inputs[6].value,
+          netPrice: inputs[7].value
+        });
+      });
+
+      const data = { date, department, pic, billToName, billToRek, items };
+
+      document.getElementById("status").innerText = "Submitting...";
+
       try {
-        const date = document.getElementById("date").value;
-        const department = document.getElementById("department").value;
-        const pic = document.getElementById("pic").value;
-        const billToName = document.getElementById("billToName").value;
-        const billToRek = document.getElementById("billToRek").value;
-        const rows = document.querySelectorAll("#itemsTable tbody tr");
-        if (!rows.length) { statusEl.innerText = "Tambahkan minimal 1 item."; return; }
-        const items = [];
-        rows.forEach(r=>{
-          const inputs = r.querySelectorAll("input");
-          items.push({
-            productName: inputs[0].value || "",
-            description: inputs[1].value || "",
-            amount: inputs[2].value || "",
-            qty: inputs[3].value || "",
-            grossPrice: inputs[4].value || "",
-            discount: inputs[5].value || "",
-            tax: inputs[6].value || "",
-            netPrice: inputs[7].value || ""
-          });
-        });
-
-        const payload = { date, department, pic, billToName, billToRek, items };
-        console.log("Sending payload:", payload);
-        statusEl.innerText = "Submitting...";
-
-        const resp = await fetch(scriptURL, {
+        const response = await fetch(scriptURL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          headers: { "Content-Type": "application/json" }, // penting!
+          body: JSON.stringify(data),
         });
 
-        // tampilkan status dan log server response (bila ada)
-        const text = await resp.text();
-        console.log("Raw server response:", text);
-        let json;
-        try { json = JSON.parse(text); }
-        catch(e) { throw new Error("Server tidak mengembalikan JSON: " + text); }
-
-        if (json.result === "success") {
-          statusEl.innerText = "✅ Submitted. rows: " + json.rows;
+        const result = await response.json();
+        if (result.result === "success") {
+          document.getElementById("status").innerText = "✅ Submitted successfully!";
         } else {
-          statusEl.innerText = "❌ Server error: " + (json.message || JSON.stringify(json));
+          document.getElementById("status").innerText = "❌ Error submitting form.";
         }
-
       } catch (err) {
-        console.error("Submit error:", err);
-        statusEl.innerText = "❌ Failed to connect to server: " + err.message;
+        document.getElementById("status").innerText = "❌ Network error.";
+        console.error(err);
       }
     }
-
-    document.addEventListener("DOMContentLoaded", function(){
-      document.getElementById("addRowBtn").addEventListener("click", addRow);
-      document.getElementById("submitBtn").addEventListener("click", submitForm);
-      addRow(); // optional: buka 1 row langsung
-    });
   </script>
 </body>
 </html>
